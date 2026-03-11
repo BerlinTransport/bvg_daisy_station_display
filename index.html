@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>BVG DAISY - Professional Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --led-orange: #ff9d00;
+        --bg-black: #050505;
+        --bvg-yellow: #fbd100;
+    }
+
+    * { box-sizing: border-box; }
+
+    body, html {
+        margin: 0; padding: 0;
+        width: 100vw; height: 100vh;
+        background-color: var(--bg-black);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+    }
+
+    /* --- SETUP OVERLAY --- */
+    #search-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: #111;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        padding: 20px;
+    }
+
+    .config-panel {
+        background: #222;
+        padding: 25px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 600px;
+        border: 1px solid #444;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+
+    .config-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        align-items: center;
+    }
+
+    .config-group input[type="number"] {
+        width: 70px;
+        padding: 6px;
+        border-radius: 4px;
+        border: none;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 15px 0;
+        justify-content: center;
+    }
+
+    .filter-bar input { display: none; }
+    .filter-bar label {
+        background: #333;
+        padding: 6px 14px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 13px;
+        border: 2px solid transparent;
+        transition: 0.2s;
+    }
+
+    .filter-bar input:checked + label {
+        background: var(--bvg-yellow);
+        color: black;
+        border-color: white;
+        font-weight: bold;
+    }
+
+    #station-query {
+        width: 100%;
+        padding: 15px;
+        font-size: 18px;
+        border-radius: 4px;
+        border: none;
+        margin-top: 10px;
+        outline: none;
+    }
+
+    #results-list {
+        list-style: none;
+        padding: 0;
+        background: white;
+        color: black;
+        margin-top: 5px;
+        border-radius: 4px;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+
+    #results-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+    #results-list li:hover { background: var(--bvg-yellow); }
+
+    /* --- MONITOR --- */
+    #monitor {
+        display: none;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .header {
+        background: #bcbcbc;
+        color: black;
+        font-weight: bold;
+        font-size: 3vh;
+        padding: 1vh 3vw;
+        display: grid;
+        grid-template-columns: 15% 65% 20%;
+    }
+
+    .led-screen {
+        flex: 1;
+        background: black;
+        padding: 1vh 3vw;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        filter: url(#ledFilter); 
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 15% 65% 20%;
+        color: var(--led-orange);
+        font-family: 'Archivo Narrow', sans-serif;
+        line-height: 1.1;
+        flex-shrink: 0;
+        align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .row.long-text {
+        white-space: normal;
+    }
+
+    .row.long-text span:nth-child(2) {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.0;
+    }
+
+    .time-cell { text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* AUSFALL ANIMATION */
+    .swap-container {
+        display: grid;
+        grid-template-columns: 100%;
+    }
+
+    .swap-text {
+        grid-column: 1;
+        grid-row: 1;
+        animation: textSwap 6s steps(1) infinite;
+    }
+
+    .swap-text:nth-child(2) {
+        animation-delay: 3s;
+        opacity: 0;
+    }
+
+    @keyframes textSwap {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+    }
+
+    /* TICKER */
+    .ticker {
+        margin-top: auto;
+        overflow: hidden;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .ticker-content {
+        display: inline-block;
+        padding-left: 100%;
+        animation: ticker-move 35s linear infinite;
+        color: var(--led-orange);
+        font-family: 'Archivo Narrow', sans-serif;
+    }
+
+    @keyframes ticker-move {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
+    }
+
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+    .is-blinking span:nth-child(2) { animation: blink 1s steps(1) infinite; }
+    .is-blinking .time-cell { display: none; }
+
+    /* FOOTER */
+    .footer {
+        height: 8vh;
+        background: white;
+        color: black;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 4vw;
+        font-weight: bold;
+        font-size: 4vh;
+    }
+
+    .bvg-logo {
+        background: var(--bvg-yellow);
+        padding: 0.2vh 1vh;
+        border: 0.4vh solid black;
+        font-family: 'Arial Black';
+        letter-spacing: -1px;
+    }
+</style>
+</head>
+<body>
+
+<div id="search-overlay">
+    <div class="config-panel">
+        <h2 style="margin-top:0; color: var(--bvg-yellow);">DAISY Konfiguration</h2>
+        
+        <div class="config-group">
+            <label>Zeilen-Budget (Gesamt):</label>
+            <input type="number" id="cfg-max-lines" value="7" min="1" max="15">
+        </div>
+
+        <div class="config-group">
+            <label>Umbruch ab Zeichen:</label>
+            <input type="number" id="cfg-threshold" value="22" min="5" max="60">
+        </div>
+
+        <div class="config-group">
+            <label>Lauftext aktiv:</label>
+            <input type="checkbox" id="cfg-show-ticker" checked>
+        </div>
+
+        <div class="filter-bar">
+            <input type="checkbox" id="f-suburban" checked><label for="f-suburban">S-Bahn</label>
+            <input type="checkbox" id="f-subway" checked><label for="f-subway">U-Bahn</label>
+            <input type="checkbox" id="f-tram" checked><label for="f-tram">Tram</label>
+            <input type="checkbox" id="f-bus" checked><label for="f-bus">Bus</label>
+            <input type="checkbox" id="f-regional" checked><label for="f-regional">Regio</label>
+        </div>
+
+        <input type="text" id="station-query" placeholder="Haltestelle suchen..." autocomplete="off">
+        <ul id="results-list"></ul>
+    </div>
+</div>
+
+<div id="monitor">
+    <div class="header">
+        <span>Linie</span><span>Ziel</span><span style="text-align:right">Abfahrt</span>
+    </div>
+    <div class="led-screen" id="led-container"></div>
+    <div class="footer">
+        <span id="display-station-name">-</span>
+        <div class="bvg-logo">BVG</div>
+    </div>
+</div>
+
+<svg style="position:absolute; width:0; height:0">
+  <defs>
+    <filter id="ledFilter">
+      <feImage x="0" y="0" width="4" height="4" result="dot" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxjaXJjbGUgY3g9IjIiIGN5PSIyIiByPSIxLjUiIGZpbGw9IndoaXRlIi8+PC9zdmc+"/>
+      <feTile result="grid"/>
+      <feComposite operator="in" in="SourceGraphic" in2="grid"/>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+    let currentId = null;
+    let timer = null;
+
+    // Suche
+    document.getElementById('station-query').addEventListener('input', async (e) => {
+        const q = e.target.value;
+        if (q.length < 3) return;
+        try {
+            const r = await fetch(`https://v6.vbb.transport.rest/locations?query=${encodeURIComponent(q)}&results=5&stops=true`);
+            const data = await r.json();
+            const list = document.getElementById('results-list');
+            list.innerHTML = '';
+            data.forEach(s => {
+                const li = document.createElement('li');
+                li.textContent = s.name;
+                li.onclick = () => {
+                    currentId = s.id;
+                    document.getElementById('display-station-name').textContent = s.name;
+                    document.getElementById('search-overlay').style.display = 'none';
+                    document.getElementById('monitor').style.display = 'flex';
+                    startMonitor();
+                };
+                list.appendChild(li);
+            });
+        } catch(e) {}
+    });
+
+    function startMonitor() {
+        update();
+        if(timer) clearInterval(timer);
+        timer = setInterval(update, 20000);
+    }
+
+    async function update() {
+        if(!currentId) return;
+        
+        const totalLines = parseInt(document.getElementById('cfg-max-lines').value) || 7;
+        const threshold = parseInt(document.getElementById('cfg-threshold').value) || 22;
+        const showTicker = document.getElementById('cfg-show-ticker').checked;
+        const trainBudget = showTicker ? (totalLines - 1) : totalLines;
+
+        const params = new URLSearchParams({
+            duration: 60,
+            results: 40,
+            suburban: document.getElementById('f-suburban').checked,
+            subway: document.getElementById('f-subway').checked,
+            tram: document.getElementById('f-tram').checked,
+            bus: document.getElementById('f-bus').checked,
+            regional: document.getElementById('f-regional').checked
+        });
+
+        try {
+            const res = await fetch(`https://v6.vbb.transport.rest/stops/${currentId}/departures?${params.toString()}`);
+            const data = await res.json();
+            const container = document.getElementById('led-container');
+            container.innerHTML = '';
+
+            const fontSize = Math.floor(82 / totalLines);
+            let usedLines = 0;
+
+            if(data.departures) {
+                // Echtzeit-Sortierung
+                const sortedDeps = data.departures.sort((a, b) => {
+                    const timeA = new Date(a.when || a.plannedWhen);
+                    const timeB = new Date(b.when || b.plannedWhen);
+                    return timeA - timeB;
+                });
+
+                for (let dep of sortedDeps) {
+                    const isCancelled = dep.cancelled === true;
+                    const isLong = dep.direction.length > threshold;
+                    const cost = isLong ? 2 : 1;
+                    
+                    if (usedLines + cost > trainBudget) break;
+                    usedLines += cost;
+
+                    const diff = Math.round((new Date(dep.when || dep.plannedWhen) - new Date()) / 60000);
+                    const min = diff <= 0 ? 0 : diff;
+                    
+                    const row = document.createElement('div');
+                    row.className = `row ${min === 0 && !isCancelled ? 'is-blinking' : ''} ${isLong ? 'long-text' : ''}`;
+                    row.style.fontSize = fontSize + 'vh';
+
+                    if (isCancelled) {
+                        row.innerHTML = `
+                            <span>${dep.line.name}</span>
+                            <span class="swap-container">
+                                <span class="swap-text">${dep.direction}</span>
+                                <span class="swap-text">Fahrt fällt aus</span>
+                            </span>
+                            <span class="time-cell">--</span>
+                        `;
+                    } else {
+                        row.innerHTML = `
+                            <span>${dep.line.name}</span>
+                            <span>${dep.direction}</span>
+                            <span class="time-cell">${min}</span>
+                        `;
+                    }
+                    container.appendChild(row);
+                }
+            }
+
+            if(showTicker) {
+                const tick = document.createElement('div');
+                tick.className = 'ticker';
+                tick.innerHTML = `<div class="ticker-content" style="font-size:${fontSize}vh">+++ Herzlich Willkommen +++ Nächste Abfahrten für ${document.getElementById('display-station-name').textContent} +++ Bitte achten Sie auf die Ansagen +++</div>`;
+                container.appendChild(tick);
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // Escape für Setup
+    window.addEventListener('keydown', e => {
+        if(e.key === 'Escape') {
+            document.getElementById('search-overlay').style.display = 'flex';
+            document.getElementById('monitor').style.display = 'none';
+            clearInterval(timer);
+        }
+    });
+</script>
+</body>
+</html>
