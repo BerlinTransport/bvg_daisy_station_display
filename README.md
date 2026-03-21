@@ -16,7 +16,7 @@ A browser-based real-time departure board for Berlin public transport (BVG/VBB),
 ### Requirements
 
 - A modern browser (Chrome, Firefox, Edge)
-- VS Code with the Live Server extension — or any local web server or a standart webserver
+- VS Code with the Live Server extension — or any web server (one html version coming later)
 
 
 ### Installation
