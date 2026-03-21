@@ -27,7 +27,9 @@ A browser-based real-time departure board for Berlin public transport (BVG/VBB),
 
 bash
 git clone https://github.com/BerlinTransport/bvg_daisy_station_display.git
+
 cd bvg_daisy_station_display
+
 Then in VS Code: right-click index.html → "Open with Live Server"
 
 Or alternatively with Python:
