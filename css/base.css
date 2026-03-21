@@ -149,3 +149,96 @@ body, html {
     filter: none;
     opacity: 0.8;
 }
+/* ── Globaler Footer (Daisy-Stil) ── */
+#global-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 7vh;
+    min-height: 36px;
+    background: #111;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2vw;
+    z-index: 1200;
+    box-sizing: border-box;
+    font-family: 'Archivo Narrow', sans-serif;
+    color: var(--led-orange);
+}
+
+#global-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+#global-footer-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#global-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.gf-label {
+    font-size: 1.6vh;
+    opacity: 0.75;
+    white-space: nowrap;
+}
+
+.gf-vbb-logo {
+    height: 3vh;
+    width: auto;
+    object-fit: contain;
+}
+
+#global-station-name {
+    font-size: 2.8vh;
+    font-weight: bold;
+    color: var(--led-orange);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 40vw;
+}
+
+.gf-avatar {
+    width: 2.8vh;
+    height: 2.8vh;
+    border-radius: 50%;
+    border: 1px solid var(--led-orange);
+    object-fit: cover;
+    opacity: 0.75;
+}
+
+#global-footer-right a,
+#global-footer-right span {
+    color: var(--led-orange);
+    font-size: 1.6vh;
+    text-decoration: none;
+    opacity: 0.75;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+#global-footer-right a:hover {
+    opacity: 1;
+}
+
+.gf-sep {
+    opacity: 0.3 !important;
+}
+
+.gf-version {
+    opacity: 0.45 !important;
+}

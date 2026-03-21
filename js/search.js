@@ -29,10 +29,11 @@ document.getElementById('station-query').addEventListener('input', async (e) => 
             li.textContent = s.name;
             li.onclick = () => {
                 currentId = s.id;
+                currentStationName = s.name;
+                document.getElementById('global-station-name').textContent = s.name;
 
                 showLoader();
                 document.getElementById('search-overlay').style.display = 'none';
-                document.querySelector('.config-footer').style.display = 'none';
 
                 if (currentVariant === 'daisy') {
                     document.getElementById('monitor-daisy').style.display = 'flex';

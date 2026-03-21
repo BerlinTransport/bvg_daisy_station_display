@@ -1,6 +1,7 @@
 let currentId = null;
 let timer = null;
 let currentVariant = 'daisy';
+let currentStationName = '';
 
 const loaderOverlay = document.getElementById('loader-overlay');
 const searchErrorEl = document.getElementById('search-error');

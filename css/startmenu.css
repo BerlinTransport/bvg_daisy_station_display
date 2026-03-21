@@ -222,3 +222,18 @@
     position: relative;
     z-index: 1300;
 }
+
+#search-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #1a1a1a;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 20px;
+    padding-bottom: calc(7vh + 20px);
+}

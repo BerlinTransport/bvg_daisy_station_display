@@ -56,8 +56,9 @@ window.addEventListener('keydown', e => {
         document.getElementById('search-overlay').style.display = 'flex';
         document.getElementById('monitor-daisy').style.display = 'none';
         document.getElementById('monitor-tft').style.display = 'none';
-        document.querySelector('.config-footer').style.display = 'flex';
+        document.getElementById('global-station-name').textContent = '';
         clearInterval(timer);
         hideLoader();
     }
 });
+
