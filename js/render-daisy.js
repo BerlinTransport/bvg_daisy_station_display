@@ -9,7 +9,9 @@ function renderDaisy(departures, totalLines, threshold, showTicker) {
     for (let dep of departures) {
         const isCancelled = dep.cancelled === true;
         const directionText = dep.direction || '';
-        const isLong = directionText.length > threshold;
+
+        // Bei Ausfall nie umbrechen — Zieltext wird per CSS abgeschnitten
+        const isLong = isCancelled ? false : directionText.length > threshold;
         const cost = isLong ? 2 : 1;
 
         if (usedLines + cost > trainBudget) break;
@@ -38,13 +40,14 @@ function renderDaisy(departures, totalLines, threshold, showTicker) {
                 <span class="time-cell-daisy">${min}</span>
             `;
         }
+
         container.appendChild(row);
     }
 
     if (showTicker) {
         const tick = document.createElement('div');
         tick.className = 'ticker';
-        tick.innerHTML = `<div class="ticker-content" style="font-size:${fontSize}vh">+++ Herzlich Willkommen +++ Nächste Abfahrten für ${document.getElementById('display-station-name-daisy').textContent} +++ Bitte achten Sie auf die Ansagen +++</div>`;
+        tick.innerHTML = `<div class="ticker-content" style="font-size:${fontSize}vh">+++ Herzlich Willkommen +++ Nächste Abfahrten für ${currentStationName} +++ Bitte achten Sie auf die Ansagen +++</div>`;
         container.appendChild(tick);
     }
 
