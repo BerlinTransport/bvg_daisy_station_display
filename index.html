@@ -4,477 +4,13 @@
 <meta charset="UTF-8">
 <title>BVG DAISY - Daisy & TFT</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@600&family=Roboto:wght@700;900&display=swap" rel="stylesheet">
-<style>
-:root {
-    --led-orange: #ff9d00;
-    --bg-black: #050505;
-    --bvg-yellow: #fbd100;
-    --lcd-bg: #ffffff;
-    --lcd-text: #000000;
-    --lcd-border: #dcdcdc;
-    --bvg-red: #be140e;
-}
-
-/* Global */
-
-* { box-sizing: border-box; }
-
-body, html {
-    margin: 0; padding: 0;
-    width: 100vw; height: 100vh;
-    background-color: var(--bg-black);
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-}
-
-/* Loader Overlay (Vollbild) */
-#loader-overlay {
-    position: fixed;
-    inset: 0;
-    background: #ffffffcc;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1500;
-}
-
-/* Balken-Loader (global) */
-.loader {
-  width: 45px;
-  aspect-ratio: 1;
-  --c: no-repeat linear-gradient(#000 0 0);
-  background: 
-    var(--c) 0%   50%,
-    var(--c) 50%  50%,
-    var(--c) 100% 50%;
-  background-size: 20% 100%;
-  animation: l1 1s infinite linear;
-}
-@keyframes l1 {
-  0%  {background-size: 20% 100%,20% 100%,20% 100%}
-  33% {background-size: 20% 10% ,20% 100%,20% 100%}
-  50% {background-size: 20% 100%,20% 10% ,20% 100%}
-  66% {background-size: 20% 100%,20% 100%,20% 10% }
-  100%{background-size: 20% 100%,20% 100%,20% 100%}
-}
-
-/* --- STARTMENÜ --- */
-#search-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #1a1a1a;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    padding: 20px;
-}
-
-.config-panel {
-    background: #262626;
-    padding: 30px;
-    border-radius: 15px;
-    width: 100%;
-    max-width: 650px;
-    border: 1px solid #333;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-}
-
-.config-panel h2 {
-    margin-top: 0;
-    color: var(--bvg-yellow);
-    font-size: 24px;
-}
-
-.config-group {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    align-items: center;
-    font-size: 15px;
-}
-
-.config-group input[type="number"] {
-    width: 70px;
-    padding: 6px;
-    border-radius: 4px;
-    border: none;
-    font-weight: bold;
-    text-align: center;
-    background: white;
-}
-
-.config-group input[type="checkbox"] {
-    transform: scale(1.2);
-}
-
-/* Varianten-Auswahl */
-
-#variant-selector {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    justify-content: center;
-}
-
-.variant-btn {
-    padding: 8px 18px;
-    border-radius: 20px;
-    border: 2px solid transparent;
-    background: #444;
-    color: #aaa;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.2s;
-}
-
-.variant-btn.active {
-    background: var(--bvg-yellow);
-    color: black;
-}
-
-/* Filter-Leiste */
-
-.filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 15px 0;
-    justify-content: center;
-}
-
-.filter-bar input { display: none; }
-
-.filter-bar label {
-    background: #333;
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    border: 2px solid transparent;
-    transition: 0.2s;
-}
-
-.filter-bar input:checked + label {
-    background: var(--bvg-yellow);
-    color: black;
-    border-color: white;
-    font-weight: bold;
-}
-
-/* Stationssuche */
-
-#station-query {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    border-radius: 8px 8px 0 0;
-    border: none;
-    outline: none;
-    margin-top: 10px;
-}
-
-#results-list {
-    list-style: none;
-    padding: 0;
-    background: white;
-    color: black;
-    margin-top: 0;
-    border-radius: 0 0 8px 8px;
-    max-height: 230px;
-    overflow-y: auto;
-}
-
-#results-list li {
-    padding: 12px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    font-size: 16px;
-}
-
-#results-list li:hover {
-    background: #f0f0f0;
-}
-
-/* Status-/Fehlerzeile unter Suche */
-
-#search-status {
-    margin-top: 6px;
-    font-size: 13px;
-    min-height: 18px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-#search-error {
-    color: #ff6b6b;
-}
-
-/* kleiner Loader in der Statuszeile */
-.inline-loader {
-  width: 18px;
-  aspect-ratio: 1;
-  --c: no-repeat linear-gradient(#fff 0 0);
-  background: 
-    var(--c) 0%   50%,
-    var(--c) 50%  50%,
-    var(--c) 100% 50%;
-  background-size: 20% 100%;
-  animation: l1 1s infinite linear;
-}
-
-/* --- DAISY (LED) MONITOR --- */
-
-#monitor-daisy {
-    display: none;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    background: var(--bg-black);
-}
-
-.header-daisy {
-    background: #bcbcbc;
-    color: black;
-    font-weight: bold;
-    font-size: 3vh;
-    padding: 1vh 3vw;
-    display: grid;
-    grid-template-columns: 15% 65% 20%;
-}
-
-.led-screen {
-    flex: 1;
-    background: black;
-    padding: 1vh 3vw;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    filter: url(#ledFilter);
-}
-
-.row-daisy {
-    display: grid;
-    grid-template-columns: 15% 65% 20%;
-    color: var(--led-orange);
-    font-family: 'Archivo Narrow', sans-serif;
-    line-height: 1.1;
-    flex-shrink: 0;
-    align-items: center;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-.row-daisy.long-text {
-    white-space: normal;
-}
-
-.row-daisy.long-text span:nth-child(2) {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-height: 1.0;
-}
-
-.time-cell-daisy {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-}
-
-/* AUSFALL ANIMATION */
-
-.swap-container {
-    display: grid;
-    grid-template-columns: 100%;
-}
-
-.swap-text {
-    grid-column: 1;
-    grid-row: 1;
-    animation: textSwap 6s steps(1) infinite;
-}
-
-.swap-text:nth-child(2) {
-    animation-delay: 3s;
-    opacity: 0;
-}
-
-@keyframes textSwap {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-}
-
-/* Ticker */
-
-.ticker {
-    margin-top: auto;
-    overflow: hidden;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.ticker-content {
-    display: inline-block;
-    padding-left: 100%;
-    animation: ticker-move 35s linear infinite;
-    color: var(--led-orange);
-    font-family: 'Archivo Narrow', sans-serif;
-}
-
-@keyframes ticker-move {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-
-@keyframes blink { 
-    0%, 49% { opacity: 1; } 
-    50%, 100% { opacity: 0; } 
-}
-
-.row-daisy.is-blinking span:nth-child(2) { 
-    animation: blink 1s steps(1) infinite; 
-}
-
-.row-daisy.is-blinking .time-cell-daisy { 
-    display: none; 
-}
-
-/* DAISY Fußzeile */
-
-.footer-daisy {
-    height: 8vh;
-    background: white;
-    color: black;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 4vw;
-    font-weight: bold;
-    font-size: 4vh;
-}
-
-.bvg-logo {
-    background: var(--bvg-yellow);
-    padding: 0.2vh 1vh;
-    border: 0.4vh solid black;
-    font-family: 'Arial Black';
-    letter-spacing: -1px;
-}
-
-/* --- TFT (LCD) MONITOR --- */
-
-#monitor-tft {
-    display: none;
-    flex-direction: column;
-    height: 100vh;
-    width: 100vw;
-    background: var(--lcd-bg);
-    font-family: 'Roboto', sans-serif;
-}
-
-.screen-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.row-tft {
-    display: grid;
-    grid-template-columns: 12% 75% 13%;
-    align-items: center;
-    padding: 0 1.5vw;
-    border-bottom: 1.5px solid var(--lcd-border);
-    color: var(--lcd-text);
-    width: 100%;
-    overflow: hidden;
-}
-
-.line-number {
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center;
-    padding: 0.1em 0.3em; 
-    border-radius: 4px; 
-    color: white; 
-    font-weight: 900;
-    min-width: 2.2em; 
-    height: 1.4em; 
-    font-size: 0.8em;
-}
-
-.destination-container {
-    padding-left: 15px; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    display: flex; 
-    align-items: center;
-}
-
-.destination {
-    font-weight: 700; 
-    display: inline-block; 
-    transform-origin: left center;
-}
-
-.time-cell-tft {
-    height: 100%; 
-    display: flex; 
-    align-items: center; 
-    justify-content: flex-end; 
-    padding-right: 1vw; 
-    font-weight: 900;
-}
-
-.time-cell-tft:not(.is-now)::after { 
-    content: " '"; 
-    margin-left: 2px; 
-}
-
-@keyframes flash-red {
-    0%, 49% { background: var(--bvg-red); color: white; }
-    50%, 100% { background: transparent; color: var(--lcd-text); }
-}
-
-.time-cell-tft.is-now { 
-    animation: flash-red 2s steps(1) infinite; 
-    justify-content: center; 
-    padding-right: 0; 
-}
-
-/* TFT Fußzeile */
-
-.footer-tft { 
-    height: 10vh; 
-    background: var(--bvg-yellow); 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 4vw; 
-    border-top: 5px solid black; 
-    flex-shrink: 0; 
-}
-
-.station-name-tft { 
-    font-weight: 900; 
-    font-size: 4.5vh; 
-    color: black; 
-}
-
-/* Gemeinsame Station-Labels */
-
-#display-station-name-daisy,
-#display-station-name-tft {
-    /* nur IDs */
-}
-</style>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/startmenu.css">
+<link rel="stylesheet" href="css/monitor-daisy.css">
+<link rel="stylesheet" href="css/monitor-tft.css">
 </head>
 <body>
+
 <div id="loader-overlay">
   <div class="loader"></div>
 </div>
@@ -483,7 +19,6 @@ body, html {
     <div class="config-panel">
         <h2>DAISY Konfiguration</h2>
 
-        <!-- Varianten-Auswahl -->
         <div id="variant-selector">
             <button class="variant-btn active" data-variant="daisy">Daisy</button>
             <button class="variant-btn" data-variant="tft">TFT</button>
@@ -504,7 +39,6 @@ body, html {
             <input type="checkbox" id="cfg-show-ticker" checked>
         </div>
 
-        <!-- Filter: S/U/Tram/Bus/Regio -->
         <div class="filter-bar">
             <input type="checkbox" id="f-suburban" checked><label for="f-suburban">S-Bahn</label>
             <input type="checkbox" id="f-subway" checked><label for="f-subway">U-Bahn</label>
@@ -529,8 +63,23 @@ body, html {
     </div>
     <div class="led-screen" id="led-container-daisy"></div>
     <div class="footer-daisy">
-        <span id="display-station-name-daisy">-</span>
-        <div class="bvg-logo">BVG</div>
+        <div class="footer-left-daisy">
+            <span class="vbb-provided">API-Data provided by</span>
+            <img class="vbb-logo"
+                 src="https://unternehmen.vbb.de/fileadmin/user_upload/VBB/Bilder/VBB-Logos/vbb-logo-bildmarke.svg"
+                 alt="VBB">
+        </div>
+        <div class="footer-right-daisy">
+            <img class="footer-avatar"
+                 src="https://avatars.githubusercontent.com/BerlinTransport?v=4"
+                 alt="BerlinTransport"
+                 onerror="this.style.display='none'">
+            <a href="https://github.com/BerlinTransport" target="_blank" rel="noopener">BerlinTransport</a>
+            <span class="footer-sep">|</span>
+            <a href="https://github.com/BerlinTransport/bvg_daisy_station_display" target="_blank" rel="noopener">bvg_daisy_station_display</a>
+            <span class="footer-sep">|</span>
+            <span class="footer-version">v0.0.1</span>
+        </div>
     </div>
 </div>
 
@@ -538,8 +87,44 @@ body, html {
 <div id="monitor-tft">
     <div class="screen-content" id="led-container-tft"></div>
     <div class="footer-tft">
-        <div class="station-name-tft" id="display-station-name-tft">-</div>
-        <div class="bvg-logo">BVG</div>
+        <div class="footer-left-tft">
+            <span class="vbb-provided">API-Data provided by</span>
+            <img class="vbb-logo"
+                 src="https://unternehmen.vbb.de/fileadmin/user_upload/VBB/Bilder/VBB-Logos/vbb-logo-bildmarke.svg"
+                 alt="VBB">
+        </div>
+        <div class="footer-right-tft">
+            <img class="footer-avatar-tft"
+                 src="https://avatars.githubusercontent.com/BerlinTransport?v=4"
+                 alt="BerlinTransport"
+                 onerror="this.style.display='none'">
+            <a href="https://github.com/BerlinTransport" target="_blank" rel="noopener">BerlinTransport</a>
+            <span class="footer-sep-tft">|</span>
+            <a href="https://github.com/BerlinTransport/bvg_daisy_station_display" target="_blank" rel="noopener">bvg_daisy_station_display</a>
+            <span class="footer-sep-tft">|</span>
+            <span class="footer-version-tft">v0.0.1</span>
+        </div>
+    </div>
+</div>
+
+<!-- Globaler Footer (alle Screens) -->
+<div class="config-footer">
+    <div class="config-footer-left">
+        <span class="config-footer-station">API-Data provided by</span>
+        <img class="vbb-logo"
+             src="https://unternehmen.vbb.de/fileadmin/user_upload/VBB/Bilder/VBB-Logos/vbb-logo-bildmarke.svg"
+             alt="VBB">
+    </div>
+    <div class="config-footer-right">
+        <img class="config-footer-avatar"
+             src="https://avatars.githubusercontent.com/BerlinTransport?v=4"
+             alt="BerlinTransport"
+             onerror="this.style.display='none'">
+        <a href="https://github.com/BerlinTransport" target="_blank" rel="noopener">BerlinTransport</a>
+        <span class="config-footer-sep">|</span>
+        <a href="https://github.com/BerlinTransport/bvg_daisy_station_display" target="_blank" rel="noopener">bvg_daisy_station_display</a>
+        <span class="config-footer-sep">|</span>
+        <span class="config-footer-version">v0.0.1</span>
     </div>
 </div>
 
@@ -554,289 +139,11 @@ body, html {
 </defs>
 </svg>
 
-<script>
-let currentId = null;
-let timer = null;
-let currentVariant = 'daisy';
-
-// Loader (Vollbild)
-const loaderOverlay = document.getElementById('loader-overlay');
-
-function showLoader() {
-    loaderOverlay.style.display = 'flex';
-}
-
-function hideLoader() {
-    setTimeout(() => {
-        loaderOverlay.style.display = 'none';
-    }, 400);
-}
-
-// Inline-Status/Fehler in der Suche
-const searchErrorEl = document.getElementById('search-error');
-const searchLoaderEl = document.getElementById('search-loader');
-
-function setSearchError(msg) {
-    searchErrorEl.textContent = msg || '';
-}
-
-function showSearchLoader() {
-    searchLoaderEl.style.display = 'inline-block';
-}
-
-function hideSearchLoader() {
-    searchLoaderEl.style.display = 'none';
-}
-
-// Linienfarben für TFT
-const lineColors = {
-    'U1': '#7dad4c', 'U2': '#da421e', 'U3': '#00a191', 'U4': '#f9d205',
-    'U5': '#7e4d25', 'U6': '#6c6c95', 'U7': '#7599cc', 'U8': '#003380', 'U9': '#f0d722',
-    'S1': '#f46a94', 'S2': '#006131', 'S25': '#006131', 'S26': '#006131', 'S3': '#00538f',
-    'S41': '#a3301a', 'S42': '#cc6633', 'S45': '#cc6633', 'S46': '#cc6633', 'S47': '#cc6633',
-    'S5': '#ff8a00', 'S7': '#7b107d', 'S75': '#7b107d', 'S8': '#5d9222', 'S85': '#5d9222', 'S9': '#8d2341',
-    'default-bus': '#95276e', 'default-tram': '#be140e', 'default-regio': '#da251d'
-};
-
-function getLineColor(dep) {
-    if (lineColors[dep.line.name]) return lineColors[dep.line.name];
-    if (dep.line.product === 'bus') return lineColors['default-bus'];
-    if (dep.line.product === 'tram') return lineColors['default-tram'];
-    if (dep.line.product === 'regional') return lineColors['default-regio'];
-    return '#444444';
-}
-
-// Varianten-Umschalter
-document.querySelectorAll('.variant-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentVariant = btn.dataset.variant;
-    });
-});
-
-// Stationssuche mit Inline-Loader und Fehlermeldung
-document.getElementById('station-query').addEventListener('input', async (e) => {
-    const q = e.target.value;
-    const list = document.getElementById('results-list');
-    list.innerHTML = '';
-    setSearchError('');
-    hideSearchLoader();
-
-    if (q.length < 3) {
-        return;
-    }
-
-    showSearchLoader();
-
-    try {
-        const r = await fetch(`https://v6.vbb.transport.rest/locations?query=${encodeURIComponent(q)}&results=5&stops=true`);
-        if (!r.ok) {
-            hideSearchLoader();
-            setSearchError('Die Auskunft ist aktuell nicht erreichbar. Bitte später erneut versuchen.');
-            return;
-        }
-        const data = await r.json();
-        hideSearchLoader();
-
-        if (!Array.isArray(data) || data.length === 0) {
-            setSearchError('Keine Haltestelle gefunden. Bitte Suchbegriff anpassen.');
-            return;
-        }
-
-        data.forEach(s => {
-            const li = document.createElement('li');
-            li.textContent = s.name;
-            li.onclick = () => {
-                currentId = s.id;
-                document.getElementById('display-station-name-daisy').textContent = s.name;
-                document.getElementById('display-station-name-tft').textContent = s.name;
-
-                // Vollbild-Loader für Übergang ins Display
-                showLoader();
-                document.getElementById('search-overlay').style.display = 'none';
-
-                if (currentVariant === 'daisy') {
-                    document.getElementById('monitor-daisy').style.display = 'flex';
-                    document.getElementById('monitor-tft').style.display = 'none';
-                } else {
-                    document.getElementById('monitor-daisy').style.display = 'none';
-                    document.getElementById('monitor-tft').style.display = 'flex';
-                }
-
-                startMonitor();
-            };
-            list.appendChild(li);
-        });
-    } catch(e) {
-        console.error(e);
-        hideSearchLoader();
-        setSearchError('Fehler bei der Verbindung zur Auskunft. Bitte Internetverbindung prüfen.');
-    }
-});
-
-function startMonitor() {
-    update();
-    if (timer) clearInterval(timer);
-    timer = setInterval(update, currentVariant === 'daisy' ? 20000 : 30000);
-}
-
-async function update() {
-    if (!currentId) return;
-
-    const totalLines = parseInt(document.getElementById('cfg-max-lines').value) || 7;
-    const threshold = parseInt(document.getElementById('cfg-threshold').value) || 22;
-    const showTicker = document.getElementById('cfg-show-ticker').checked;
-
-    const filters = {
-        suburban: document.getElementById('f-suburban').checked,
-        subway: document.getElementById('f-subway').checked,
-        tram: document.getElementById('f-tram').checked,
-        bus: document.getElementById('f-bus').checked,
-        regional: document.getElementById('f-regional').checked
-    };
-
-    const params = new URLSearchParams({
-        duration: currentVariant === 'daisy' ? 60 : 90,
-        results: currentVariant === 'daisy' ? 40 : 50,
-        suburban: filters.suburban,
-        subway: filters.subway,
-        tram: filters.tram,
-        bus: filters.bus,
-        regional: filters.regional
-    });
-
-    try {
-        const res = await fetch(`https://v6.vbb.transport.rest/stops/${currentId}/departures?${params.toString()}`);
-        const data = await res.json();
-
-        if (!data.departures) {
-            hideLoader();
-            return;
-        }
-
-        const departures = data.departures.sort((a, b) => {
-            const timeA = new Date(a.when || a.plannedWhen);
-            const timeB = new Date(b.when || b.plannedWhen);
-            return timeA - timeB;
-        });
-
-        if (currentVariant === 'daisy') {
-            renderDaisy(departures, totalLines, threshold, showTicker);
-        } else {
-            renderTFT(departures, totalLines, threshold);
-        }
-    } catch(e) {
-        console.error(e);
-        hideLoader();
-    }
-}
-
-// Rendering Daisy
-function renderDaisy(departures, totalLines, threshold, showTicker) {
-    const container = document.getElementById('led-container-daisy');
-    container.innerHTML = '';
-
-    const trainBudget = showTicker ? (totalLines - 1) : totalLines;
-    const fontSize = Math.floor(82 / totalLines);
-    let usedLines = 0;
-
-    for (let dep of departures) {
-        const isCancelled = dep.cancelled === true;
-        const directionText = dep.direction || '';
-        const isLong = directionText.length > threshold;
-        const cost = isLong ? 2 : 1;
-
-        if (usedLines + cost > trainBudget) break;
-        usedLines += cost;
-
-        const diff = Math.round((new Date(dep.when || dep.plannedWhen) - new Date()) / 60000);
-        const min = diff <= 0 ? 0 : diff;
-
-        const row = document.createElement('div');
-        row.className = `row-daisy ${min === 0 && !isCancelled ? 'is-blinking' : ''} ${isLong ? 'long-text' : ''}`;
-        row.style.fontSize = fontSize + 'vh';
-
-        if (isCancelled) {
-            row.innerHTML = `
-                <span>${dep.line.name}</span>
-                <span class="swap-container">
-                    <span class="swap-text">${directionText}</span>
-                    <span class="swap-text">Fahrt fällt aus</span>
-                </span>
-                <span class="time-cell-daisy">--</span>
-            `;
-        } else {
-            row.innerHTML = `
-                <span>${dep.line.name}</span>
-                <span>${directionText}</span>
-                <span class="time-cell-daisy">${min}</span>
-            `;
-        }
-        container.appendChild(row);
-    }
-
-    if (showTicker) {
-        const tick = document.createElement('div');
-        tick.className = 'ticker';
-        tick.innerHTML = `<div class="ticker-content" style="font-size:${fontSize}vh">+++ Herzlich Willkommen +++ Nächste Abfahrten für ${document.getElementById('display-station-name-daisy').textContent} +++ Bitte achten Sie auf die Ansagen +++</div>`;
-        container.appendChild(tick);
-    }
-
-    hideLoader();
-}
-
-// Rendering TFT
-function renderTFT(departures, totalLines, threshold) {
-    const container = document.getElementById('led-container-tft');
-    container.innerHTML = '';
-
-    const rowHeight = 90 / totalLines;
-
-    departures.slice(0, totalLines).forEach(dep => {
-        const departureTime = new Date(dep.when || dep.plannedWhen);
-        const diff = Math.round((departureTime - new Date()) / 60000);
-        const min = diff <= 0 ? 0 : diff;
-        const bgColor = getLineColor(dep);
-        const directionText = dep.direction || '';
-
-        let scaleX = 1;
-        if (directionText.length > threshold) {
-            scaleX = threshold / directionText.length;
-            if (scaleX < 0.55) scaleX = 0.55;
-        }
-
-        const row = document.createElement('div');
-        row.className = 'row-tft';
-        row.style.height = rowHeight + 'vh';
-        row.style.fontSize = (rowHeight * 0.7) + 'vh';
-
-        row.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-                <div class="line-number" style="background-color: ${bgColor}">${dep.line.name}</div>
-            </div>
-            <div class="destination-container">
-                <div class="destination" style="transform: scaleX(${scaleX})">${directionText}</div>
-            </div>
-            <div class="time-cell-tft ${min === 0 ? 'is-now' : ''}">${min === 0 ? 'jetzt' : min}</div>
-        `;
-        container.appendChild(row);
-    });
-
-    hideLoader();
-}
-
-// ESC für Setup
-window.addEventListener('keydown', e => {
-    if(e.key === 'Escape') {
-        showLoader();
-        document.getElementById('search-overlay').style.display = 'flex';
-        document.getElementById('monitor-daisy').style.display = 'none';
-        document.getElementById('monitor-tft').style.display = 'none';
-        clearInterval(timer);
-        hideLoader();
-    }
-});
-</script>
+<script src="js/globals.js"></script>
+<script src="js/config.js"></script>
+<script src="js/search.js"></script>
+<script src="js/render-daisy.js"></script>
+<script src="js/render-tft.js"></script>
+<script src="js/monitor.js"></script>
 </body>
 </html>

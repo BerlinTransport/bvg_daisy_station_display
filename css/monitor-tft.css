@@ -1,0 +1,148 @@
+#monitor-tft {
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background: var(--lcd-bg);
+    font-family: 'Roboto', sans-serif;
+}
+
+.screen-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-tft {
+    display: grid;
+    grid-template-columns: 12% 75% 13%;
+    align-items: center;
+    padding: 0 1.5vw;
+    border-bottom: 1.5px solid var(--lcd-border);
+    color: var(--lcd-text);
+    width: 100%;
+    overflow: hidden;
+}
+
+.line-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.1em 0.3em;
+    border-radius: 4px;
+    color: white;
+    font-weight: 900;
+    min-width: 2.2em;
+    height: 1.4em;
+    font-size: 0.8em;
+}
+
+.destination-container {
+    padding-left: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.destination {
+    font-weight: 700;
+    display: inline-block;
+    transform-origin: left center;
+}
+
+.time-cell-tft {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 1vw;
+    font-weight: 900;
+}
+
+.time-cell-tft:not(.is-now)::after {
+    content: " '";
+    margin-left: 2px;
+}
+
+@keyframes flash-red {
+    0%, 49% { background: var(--bvg-red); color: white; }
+    50%, 100% { background: transparent; color: var(--lcd-text); }
+}
+
+.time-cell-tft.is-now {
+    animation: flash-red 2s steps(1) infinite;
+    justify-content: center;
+    padding-right: 0;
+}
+
+.footer-tft {
+    height: 8vh;
+    background: var(--bvg-yellow);
+    border-top: 3px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2vw;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.footer-left-tft {
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    flex-shrink: 0;
+}
+
+.station-name-tft {
+    font-weight: 900;
+    font-size: 3.5vh;
+    color: black;
+    white-space: nowrap;
+}
+
+.footer-right-tft {
+    display: flex;
+    align-items: center;
+    gap: 0.8vw;
+    flex-shrink: 0;
+}
+
+.footer-right-tft a,
+.footer-right-tft span {
+    color: black;
+    font-size: 1.6vh;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.footer-right-tft a:hover {
+    opacity: 1;
+}
+
+.footer-sep-tft {
+    opacity: 0.25 !important;
+}
+
+.footer-version-tft {
+    opacity: 0.4 !important;
+}
+
+.footer-avatar-tft {
+    width: 2.8vh;
+    height: 2.8vh;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.3);
+    object-fit: cover;
+    opacity: 0.7;
+}
+
+.station-name-tft {
+    font-weight: 900;
+    font-size: 4.5vh;
+    color: black;
+}

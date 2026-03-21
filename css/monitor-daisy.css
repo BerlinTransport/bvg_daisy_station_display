@@ -1,0 +1,171 @@
+#monitor-daisy {
+    display: none;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    background: var(--bg-black);
+}
+
+.header-daisy {
+    background: #bcbcbc;
+    color: black;
+    font-weight: bold;
+    font-size: 3vh;
+    padding: 1vh 3vw;
+    display: grid;
+    grid-template-columns: 15% 65% 20%;
+}
+
+.led-screen {
+    flex: 1;
+    background: black;
+    padding: 1vh 3vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    filter: url(#ledFilter);
+}
+
+.row-daisy {
+    display: grid;
+    grid-template-columns: 15% 65% 20%;
+    color: var(--led-orange);
+    font-family: 'Archivo Narrow', sans-serif;
+    line-height: 1.1;
+    flex-shrink: 0;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.row-daisy.long-text { white-space: normal; }
+
+.row-daisy.long-text span:nth-child(2) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.0;
+}
+
+.time-cell-daisy {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.swap-container {
+    display: grid;
+    grid-template-columns: 100%;
+}
+
+.swap-text {
+    grid-column: 1;
+    grid-row: 1;
+    animation: textSwap 6s steps(1) infinite;
+}
+
+.swap-text:nth-child(2) {
+    animation-delay: 3s;
+    opacity: 0;
+}
+
+@keyframes textSwap {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.ticker {
+    margin-top: auto;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.ticker-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker-move 35s linear infinite;
+    color: var(--led-orange);
+    font-family: 'Archivo Narrow', sans-serif;
+}
+
+@keyframes ticker-move {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.row-daisy.is-blinking span:nth-child(2) {
+    animation: blink 1s steps(1) infinite;
+}
+
+.row-daisy.is-blinking .time-cell-daisy { display: none; }
+
+.footer-daisy {
+    height: 8vh;
+    background: #111;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2vw;
+    flex-shrink: 0;
+    font-family: 'Archivo Narrow', sans-serif;
+    overflow: hidden;
+}
+
+.footer-left-daisy {
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    flex-shrink: 0;
+}
+
+.footer-left-daisy span {
+    color: var(--led-orange);
+    font-size: 3.5vh;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.footer-right-daisy {
+    display: flex;
+    align-items: center;
+    gap: 0.8vw;
+    flex-shrink: 0;
+}
+
+.footer-right-daisy a,
+.footer-right-daisy span {
+    color: var(--led-orange);
+    font-size: 1.6vh;
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+.footer-right-daisy a:hover {
+    opacity: 1;
+}
+
+.footer-sep {
+    opacity: 0.3 !important;
+}
+
+.footer-version {
+    opacity: 0.45 !important;
+}
+
+.footer-avatar {
+    width: 2.8vh;
+    height: 2.8vh;
+    border-radius: 50%;
+    border: 1px solid var(--led-orange);
+    object-fit: cover;
+    opacity: 0.75;
+}

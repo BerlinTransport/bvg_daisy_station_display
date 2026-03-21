@@ -1,0 +1,151 @@
+:root {
+    --led-orange: #ff9d00;
+    --bg-black: #050505;
+    --bvg-yellow: #fbd100;
+    --lcd-bg: #ffffff;
+    --lcd-text: #000000;
+    --lcd-border: #dcdcdc;
+    --bvg-red: #be140e;
+}
+
+* { box-sizing: border-box; }
+
+body, html {
+    margin: 0; padding: 0;
+    width: 100vw; height: 100vh;
+    background-color: var(--bg-black);
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#loader-overlay {
+    position: fixed;
+    inset: 0;
+    background: #ffffffcc;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+}
+
+.loader {
+    width: 45px;
+    aspect-ratio: 1;
+    --c: no-repeat linear-gradient(#000 0 0);
+    background:
+        var(--c) 0%   50%,
+        var(--c) 50%  50%,
+        var(--c) 100% 50%;
+    background-size: 20% 100%;
+    animation: l1 1s infinite linear;
+}
+
+.inline-loader {
+    width: 18px;
+    aspect-ratio: 1;
+    --c: no-repeat linear-gradient(#fff 0 0);
+    background:
+        var(--c) 0%   50%,
+        var(--c) 50%  50%,
+        var(--c) 100% 50%;
+    background-size: 20% 100%;
+    animation: l1 1s infinite linear;
+}
+
+@keyframes l1 {
+    0%  { background-size: 20% 100%, 20% 100%, 20% 100% }
+    33% { background-size: 20% 10%,  20% 100%, 20% 100% }
+    50% { background-size: 20% 100%, 20% 10%,  20% 100% }
+    66% { background-size: 20% 100%, 20% 100%, 20% 10%  }
+    100%{ background-size: 20% 100%, 20% 100%, 20% 100% }
+}
+
+.bvg-logo {
+    background: var(--bvg-yellow);
+    padding: 0.2vh 1vh;
+    border: 0.4vh solid black;
+    font-family: 'Arial Black';
+    letter-spacing: -1px;
+}
+
+/* ── App-Footer (Startmenü-Stil) ── */
+#app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 42px;
+    background: #262626;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1100;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: white;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+#app-footer .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+#app-footer .footer-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #555;
+    object-fit: cover;
+}
+
+#app-footer a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+#app-footer a:hover {
+    color: var(--bvg-yellow);
+}
+
+#app-footer .footer-sep {
+    color: #555;
+    font-size: 15px;
+}
+
+#app-footer .footer-version {
+    color: #777;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+/* ── VBB Logo ── */
+.vbb-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+}
+
+.vbb-provided {
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+
+/* Daisy: Logo weiß einfärben (SVG auf schwarzem Grund) */
+.vbb-logo--daisy {
+    filter: invert(1);
+    opacity: 0.75;
+}
+
+/* TFT: Logo auf gelbem Grund – dunkel lassen */
+.vbb-logo--tft {
+    filter: none;
+    opacity: 0.8;
+}
