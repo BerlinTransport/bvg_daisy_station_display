@@ -1,25 +1,24 @@
 async function update() {
     if (!currentId) return;
 
-    const totalLines = parseInt(document.getElementById('cfg-max-lines').value) || 7;
-    const threshold = parseInt(document.getElementById('cfg-threshold').value) || 22;
-    const showTicker = document.getElementById('cfg-show-ticker').checked;
+    const { lines: totalLines, threshold } = getScaleValues();
+    const showTicker = document.getElementById('cfg-show-ticker').dataset.active === 'true';
 
     const filters = {
         suburban: document.getElementById('f-suburban').checked,
-        subway: document.getElementById('f-subway').checked,
-        tram: document.getElementById('f-tram').checked,
-        bus: document.getElementById('f-bus').checked,
+        subway:   document.getElementById('f-subway').checked,
+        tram:     document.getElementById('f-tram').checked,
+        bus:      document.getElementById('f-bus').checked,
         regional: document.getElementById('f-regional').checked
     };
 
     const params = new URLSearchParams({
         duration: currentVariant === 'daisy' ? 60 : 90,
-        results: currentVariant === 'daisy' ? 40 : 50,
+        results:  currentVariant === 'daisy' ? 40 : 50,
         suburban: filters.suburban,
-        subway: filters.subway,
-        tram: filters.tram,
-        bus: filters.bus,
+        subway:   filters.subway,
+        tram:     filters.tram,
+        bus:      filters.bus,
         regional: filters.regional
     });
 
@@ -61,4 +60,3 @@ window.addEventListener('keydown', e => {
         hideLoader();
     }
 });
-

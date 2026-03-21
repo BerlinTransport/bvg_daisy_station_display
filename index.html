@@ -17,34 +17,41 @@
 
 <div id="search-overlay">
     <div class="config-panel">
-        <h2>DAISY Konfiguration</h2>
+        <h2>Station Display Konfiguration</h2>
 
-        <div id="variant-selector">
-            <button class="variant-btn active" data-variant="daisy">Daisy</button>
-            <button class="variant-btn" data-variant="tft">TFT</button>
+        <div class="config-group">
+            <label>Display:</label>
+            <div id="variant-selector">
+                <button class="variant-btn active" data-variant="daisy">Daisy</button>
+                <button class="variant-btn" data-variant="tft">TFT</button>
+            </div>
         </div>
 
         <div class="config-group">
-            <label>Zeilen-Budget (Gesamt):</label>
-            <input type="number" id="cfg-max-lines" value="7" min="1" max="15">
+            <label>Skalierung:</label>
+            <div id="scale-selector">
+                <button class="variant-btn" data-scale="XS">XS</button>
+                <button class="variant-btn" data-scale="S">S</button>
+                <button class="variant-btn active" data-scale="M">M</button>
+                <button class="variant-btn" data-scale="L">L</button>
+                <button class="variant-btn" data-scale="XL">XL</button>
+            </div>
         </div>
 
         <div class="config-group">
-            <label>Umbruch/Verkleinern ab Zeichen:</label>
-            <input type="number" id="cfg-threshold" value="22" min="5" max="60">
+            <label>Lauftext (derzeit nur Daisy):</label>
+            <button class="variant-btn active" id="cfg-show-ticker" data-active="true">An</button>
         </div>
 
         <div class="config-group">
-            <label>Lauftext (nur Daisy) aktiv:</label>
-            <input type="checkbox" id="cfg-show-ticker" checked>
-        </div>
-
-        <div class="filter-bar">
-            <input type="checkbox" id="f-suburban" checked><label for="f-suburban">S-Bahn</label>
-            <input type="checkbox" id="f-subway" checked><label for="f-subway">U-Bahn</label>
-            <input type="checkbox" id="f-tram" checked><label for="f-tram">Tram</label>
-            <input type="checkbox" id="f-bus" checked><label for="f-bus">Bus</label>
-            <input type="checkbox" id="f-regional" checked><label for="f-regional">Regio</label>
+            <label>Verkehrsmittel:</label>
+            <div class="filter-bar">
+                <input type="checkbox" id="f-suburban" checked><label for="f-suburban">S-Bahn</label>
+                <input type="checkbox" id="f-subway" checked><label for="f-subway">U-Bahn</label>
+                <input type="checkbox" id="f-tram" checked><label for="f-tram">Tram</label>
+                <input type="checkbox" id="f-bus" checked><label for="f-bus">Bus</label>
+                <input type="checkbox" id="f-regional" checked><label for="f-regional">Regio</label>
+            </div>
         </div>
 
         <input type="text" id="station-query" placeholder="Haltestelle suchen..." autocomplete="off">
@@ -91,7 +98,7 @@
         <span class="gf-sep">|</span>
         <a href="https://github.com/BerlinTransport/bvg_daisy_station_display" target="_blank" rel="noopener">bvg_daisy_station_display</a>
         <span class="gf-sep">|</span>
-        <span class="gf-version">v0.0.1</span>
+        <span class="gf-version">pre v0.0.2</span>
     </div>
 </div>
 

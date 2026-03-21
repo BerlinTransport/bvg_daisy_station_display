@@ -15,10 +15,29 @@ function getLineColor(dep) {
     return '#444444';
 }
 
-document.querySelectorAll('.variant-btn').forEach(btn => {
+// Display-Variante
+document.querySelectorAll('#variant-selector .variant-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#variant-selector .variant-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentVariant = btn.dataset.variant;
     });
+});
+
+// Skalierung
+document.querySelectorAll('#scale-selector .variant-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('#scale-selector .variant-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentScale = btn.dataset.scale;
+    });
+});
+
+// Lauftext
+const tickerBtn = document.getElementById('cfg-show-ticker');
+tickerBtn.addEventListener('click', () => {
+    const isActive = tickerBtn.dataset.active === 'true';
+    tickerBtn.dataset.active = (!isActive).toString();
+    tickerBtn.classList.toggle('active', !isActive);
+    tickerBtn.textContent = !isActive ? 'An' : 'Aus';
 });
