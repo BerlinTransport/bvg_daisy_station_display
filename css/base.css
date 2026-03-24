@@ -127,8 +127,27 @@ body, html {
 
 #global-footer-right a:hover { opacity: 1; }
 
-.gf-sep     { opacity: 0.3  !important; }
 .gf-version { opacity: 0.45 !important; }
+
+#global-clock {
+  font-size: 2.8vh;
+  font-weight: bold;
+  color: var(--led-orange);
+  white-space: nowrap;
+}
+
+.gf-sep {
+  margin: 0 10px;
+  color: var(--led-orange);
+  opacity: 0.75;
+}
+
+#gf-sep {
+  margin: 0 10px;
+  color: var(--led-orange);
+  opacity: 0.75;
+  display: none;
+}
 
 /* ── Footer Zurück-Button ── */
 .footer-back-btn {

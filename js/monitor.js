@@ -25,7 +25,11 @@ function goToMenu() {
   document.getElementById('monitor-daisy').style.display = 'none';
   document.getElementById('monitor-tft').style.display = 'none';
   document.getElementById('global-station-name').textContent = '';
+  document.getElementById('global-clock').style.display = 'none';
+  document.getElementById('gf-sep').style.display = 'none';
   clearInterval(timer);
+  clearInterval(clockTimer);
+  clockTimer = null; // Reset damit startClock() beim nächsten Start neu feuert
   hideLoader();
 }
 
@@ -86,13 +90,50 @@ async function update() {
 
   } catch (e) {
     console.error(e);
+
+    const containerId = currentVariant === 'daisy' ? 'led-container-daisy' : 'led-container-tft';
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = '';
+        const { totalLines } = calcScale(containerId);
+        const msg = document.createElement('div');
+
+        if (currentVariant === 'daisy') {
+        const fontSize = Math.floor(82 / totalLines);
+        msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:var(--led-orange);font-family:"Archivo Narrow",sans-serif;font-size:${fontSize}vh;`;
+        } else {
+        const rowHeight = 90 / totalLines;
+        msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:var(--lcd-text);font-family:"Roboto",sans-serif;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
+        }
+
+        msg.textContent = 'API nicht erreichbar – Neuladen in 20 Sekunden';
+        container.appendChild(msg);
+    }
+
     hideLoader();
+    }
+}
+// ── Uhr starten ──────────────────────────────────────────────────────────
+
+let clockTimer = null; // separates Handle für die Uhr
+
+function startClock() {
+  function tick() {
+    const now = new Date();
+    document.getElementById('global-clock').textContent =
+      now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
+  tick();
+  clockTimer = setInterval(tick, 1000);
+
+  document.getElementById('global-clock').style.display = 'inline';
+  document.getElementById('gf-sep').style.display = 'inline';
 }
 
 // ── Monitor starten ──────────────────────────────────────────────────────────
 
 function startMonitor() {
+  if (!clockTimer) startClock(); // nur beim ersten Start
   update();
   if (timer) clearInterval(timer);
   timer = setInterval(update, currentVariant === 'daisy' ? 20000 : 30000);
