@@ -105,3 +105,8 @@
 .cancelled-time::after {
     display: none !important;
 }
+#monitor-tft.dark-mode {
+  --lcd-bg: #000;
+  --lcd-text: #e0e0e0;
+  --lcd-border: #222;
+}

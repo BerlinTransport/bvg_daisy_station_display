@@ -38,3 +38,26 @@ tickerBtn.addEventListener('click', () => {
   tickerBtn.classList.toggle('active', !isActive);
   tickerBtn.textContent = !isActive ? 'An' : 'Aus';
 });
+
+// Display-Variante — erweitert um Sichtbarkeitssteuerung
+document.querySelectorAll('#variant-selector .variant-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#variant-selector .variant-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentVariant = btn.dataset.variant;
+
+    const isDaisy = currentVariant === 'daisy';
+    document.getElementById('cfg-group-ticker').style.display   = isDaisy ? 'flex' : 'none';
+    document.getElementById('cfg-group-darkmode').style.display = isDaisy ? 'none' : 'flex';
+  });
+});
+
+// Dunkler Modus
+const darkBtn = document.getElementById('cfg-dark-mode');
+darkBtn.addEventListener('click', () => {
+  const isActive = darkBtn.dataset.active === 'true';
+  darkBtn.dataset.active = (!isActive).toString();
+  darkBtn.classList.toggle('active', !isActive);
+  darkBtn.textContent = !isActive ? 'An' : 'Aus';
+  document.getElementById('monitor-tft').classList.toggle('dark-mode', !isActive);
+});

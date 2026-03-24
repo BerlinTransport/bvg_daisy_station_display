@@ -39,9 +39,16 @@
         </select>
         </div>
 
-        <div class="config-group">
-            <label>Lauftext (derzeit nur Daisy):</label>
-            <button class="variant-btn active" id="cfg-show-ticker" data-active="true">An</button>
+        <!-- Lauftext — nur bei Daisy sichtbar -->
+        <div class="config-group" id="cfg-group-ticker">
+        <label>Lauftext</label>
+        <button class="variant-btn active" id="cfg-show-ticker" data-active="true">An</button>
+        </div>
+
+        <!-- Dunkler Modus — nur bei TFT sichtbar -->
+        <div class="config-group" id="cfg-group-darkmode" style="display:none">
+        <label>Dunkler Modus</label>
+        <button class="variant-btn" id="cfg-dark-mode" data-active="false">Aus</button>
         </div>
 
         <div class="config-group">

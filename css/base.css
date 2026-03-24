@@ -1,7 +1,7 @@
 :root {
     --led-orange: #ff9d00;
     --bg-black: #050505;
-    --bvg-yellow: #fbd100;
+    --bvg-yellow: #ff9d00;
     --lcd-bg: #ffffff;
     --lcd-text: #000000;
     --lcd-border: #dcdcdc;
@@ -19,46 +19,29 @@ body, html {
 }
 
 #loader-overlay {
-    position: fixed;
-    inset: 0;
-    background: #ffffffcc;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1500;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.85); /* dunkel statt hellgrau */
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.4; }
 }
 
 .loader {
-    width: 45px;
-    aspect-ratio: 1;
-    --c: no-repeat linear-gradient(#000 0 0);
-    background:
-        var(--c) 0%   50%,
-        var(--c) 50%  50%,
-        var(--c) 100% 50%;
-    background-size: 20% 100%;
-    animation: l1 1s infinite linear;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #FF6600;
+  animation: pulse 1.2s ease infinite;
 }
 
-.inline-loader {
-    width: 18px;
-    aspect-ratio: 1;
-    --c: no-repeat linear-gradient(#fff 0 0);
-    background:
-        var(--c) 0%   50%,
-        var(--c) 50%  50%,
-        var(--c) 100% 50%;
-    background-size: 20% 100%;
-    animation: l1 1s infinite linear;
-}
-
-@keyframes l1 {
-    0%  { background-size: 20% 100%, 20% 100%, 20% 100% }
-    33% { background-size: 20% 10%,  20% 100%, 20% 100% }
-    50% { background-size: 20% 100%, 20% 10%,  20% 100% }
-    66% { background-size: 20% 100%, 20% 100%, 20% 10%  }
-    100%{ background-size: 20% 100%, 20% 100%, 20% 100% }
-}
 
 /* ── Globaler Footer (Daisy-Stil) ── */
 #global-footer {
