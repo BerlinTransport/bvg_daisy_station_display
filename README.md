@@ -2,7 +2,7 @@
 
 A browser-based real-time departure board for Berlin public transport (BVG/VBB), inspired by the classic DAISY LED displays and modern TFT screens found at Berlin stations.
 
-## ✨ Features
+## Features
 
 - Daisy Mode — authentic LED look with orange-on-black display, pixel grid filter and scrolling ticker
 - TFT Mode — modern LCD display with colored line badges
@@ -12,7 +12,7 @@ A browser-based real-time departure board for Berlin public transport (BVG/VBB),
 - Auto Refresh — departures reload automatically every 20–30 seconds
 - Skaling — choose your number of lines in the displays
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Requirements
 
@@ -40,9 +40,9 @@ python -m http.server 8080
 http://localhost:8080
 
 > [!NOTE]
-> ⚠️ The app does not work by opening it directly as a file:// URL, as browsers block external scripts and stylesheets in that case!
+> The app does not work by opening it directly as a file:// URL, as browsers block external scripts and stylesheets in that case!
 
-## 📁 Project Structure
+## Project Structure
 
     bvg_daisy_station_display/
     ├── index.html
@@ -59,7 +59,7 @@ http://localhost:8080
         ├── render-tft.js     # Rendering — TFT mode
         └── monitor.js        # Update loop, ESC handler
 
-## 🔌 API
+## API
 
 This project uses the public VBB REST API v6:
 
