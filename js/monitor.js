@@ -30,7 +30,7 @@ function goToMenu() {
   document.getElementById('gf-sep').style.display = 'none';
   clearInterval(timer);
   clearInterval(clockTimer);
-  clockTimer = null; // Reset damit startClock() beim nächsten Start neu feuert
+  clockTimer = null;
   hideLoader();
 }
 
@@ -55,7 +55,8 @@ async function update() {
     subway:   document.getElementById('f-subway'),
     tram:     document.getElementById('f-tram'),
     bus:      document.getElementById('f-bus'),
-    regional: document.getElementById('f-regional')
+    regional: document.getElementById('f-regional'),
+    express:  document.getElementById('f-express')
   };
 
   const filters = {
@@ -63,7 +64,8 @@ async function update() {
     subway:   cfgFilters.subway?.checked   ?? true,
     tram:     cfgFilters.tram?.checked     ?? true,
     bus:      cfgFilters.bus?.checked      ?? true,
-    regional: cfgFilters.regional?.checked ?? true
+    regional: cfgFilters.regional?.checked ?? true,
+    express:  cfgFilters.express?.checked  ?? true
   };
 
   const params = new URLSearchParams({
@@ -73,7 +75,8 @@ async function update() {
     subway:   filters.subway,
     tram:     filters.tram,
     bus:      filters.bus,
-    regional: filters.regional
+    // regional muss true sein wenn Regio ODER Fernverkehr aktiv ist
+    regional: filters.regional || filters.express
   });
 
   try {
@@ -85,11 +88,22 @@ async function update() {
 
     const departures = data.departures
       .filter(dep => !lineFilter || lineFilter.includes(dep.line.name.toUpperCase()))
+      .filter(dep => {
+        if (isExpressTrain(dep)) return filters.express;
+        switch (dep.line.product) {
+          case 'suburban': return filters.suburban;
+          case 'subway':   return filters.subway;
+          case 'tram':     return filters.tram;
+          case 'bus':      return filters.bus;
+          case 'regional': return filters.regional;
+          default:         return true;
+        }
+      })
       .sort((a, b) => new Date(a.when ?? a.plannedWhen) - new Date(b.when ?? b.plannedWhen));
 
-    if (currentVariant === 'daisy')     renderDaisy(departures, totalLines, threshold, showTicker);
-    else if (currentVariant === 'tft')  renderTFT(departures, totalLines, threshold);
-    else                                renderZZA(departures, totalLines, threshold);
+    if (currentVariant === 'daisy')    renderDaisy(departures, totalLines, threshold, showTicker);
+    else if (currentVariant === 'tft') renderTFT(departures, totalLines, threshold);
+    else                               renderZZA(departures, totalLines, threshold);
 
   } catch (e) {
     console.error(e);
@@ -112,7 +126,7 @@ async function update() {
         msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:var(--lcd-text);font-family:"Roboto",sans-serif;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
       } else {
         const rowHeight = 90 / tl;
-        msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:var(--zza-text);font-family:"Roboto",sans-serif;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
+        msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:#ffffff;font-family:"Roboto",sans-serif;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
       }
 
       msg.textContent = 'API nicht erreichbar – Neuladen in 20 Sekunden';
@@ -125,7 +139,7 @@ async function update() {
 
 // ── Uhr starten ──────────────────────────────────────────────────────────────
 
-let clockTimer = null; // separates Handle für die Uhr
+let clockTimer = null;
 
 function startClock() {
   function tick() {
@@ -142,7 +156,7 @@ function startClock() {
 // ── Monitor starten ───────────────────────────────────────────────────────────
 
 function startMonitor() {
-  if (!clockTimer) startClock(); // nur beim ersten Start
+  if (!clockTimer) startClock();
   update();
   if (timer) clearInterval(timer);
   timer = setInterval(update, currentVariant === 'daisy' ? 20000 : 30000);

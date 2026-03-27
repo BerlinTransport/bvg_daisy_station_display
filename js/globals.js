@@ -62,3 +62,35 @@ function getLineFilter() {
   if (!input.trim()) return null;
   return input.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
 }
+
+// ── Fernverkehr-Erkennung ─────────────────────────────────────────────
+
+const EXPRESS_PREFIXES = ['ICE', 'IC', 'EC', 'RJ', 'RJX', 'NJ', 'EN', 'TGV', 'EST'];
+
+function isExpressTrain(dep) {
+  if (!dep.line?.name) return false;
+  const name = dep.line.name.toUpperCase();
+  return EXPRESS_PREFIXES.some(prefix => name.startsWith(prefix));
+}
+
+// ── Linienname normalisieren ──────────────────────────────────────────────────
+
+function getLineName(dep) {
+  let name = dep.line?.name ?? '';
+
+  // FLX aus Remarks erkennen und Prefix setzen
+  const isFlix = dep.remarks?.some(
+    r => r.type === 'hint' && r.code === 'OPERATOR' && r.text === 'FLX'
+  );
+  if (isFlix && !name.startsWith('FLX')) {
+    return `FLX ${name}`;
+  }
+
+  // Bei Fernzügen nur die Zahl anzeigen (ICE 685 → 685)
+  if (isExpressTrain(dep)) {
+    const match = name.match(/\d+/);
+    return match ? match[0] : name;
+  }
+
+  return name;
+}

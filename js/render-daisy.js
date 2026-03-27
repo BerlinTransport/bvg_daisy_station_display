@@ -37,7 +37,7 @@ function renderDaisy(departures, totalLines, threshold, showTicker) {
 
         if (isCancelled) {
             row.innerHTML = `
-                <span>${dep.line.name}</span>
+                <span>${getLineName(dep)}</span>
                 <span class="swap-container">
                     <span class="swap-text">${directionText}</span>
                     <span class="swap-text">Fahrt fällt aus</span>
@@ -46,7 +46,7 @@ function renderDaisy(departures, totalLines, threshold, showTicker) {
             `;
         } else {
             row.innerHTML = `
-                <span>${dep.line.name}</span>
+                <span>${getLineName(dep)}</span>
                 <span>${directionText}</span>
                 <span class="time-cell-daisy">${min}</span>
             `;

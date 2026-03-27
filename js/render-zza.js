@@ -45,7 +45,7 @@ function renderZZA(departures, totalLines, threshold) {
         ${showDot ? `<span class="${dotClass}"></span>` : ''}
       </div>
       <div class="zza-cell-line">
-        <span class="zza-line-badge" style="background:${bgColor}">${dep.line.name}</span>
+        <span class="zza-line-badge" style="background:${bgColor}">${getLineName(dep)}</span>
       </div>
       <div class="zza-cell-dest">
         ${isCancelled

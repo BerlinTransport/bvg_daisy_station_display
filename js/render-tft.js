@@ -31,7 +31,7 @@ function renderTFT(departures, totalLines, threshold) {
     if (isCancelled) {
       row.innerHTML = `
         <div style="display:flex;justify-content:center;align-items:center;height:100%">
-          <div class="line-number" style="background-color:${bgColor};opacity:0.5">${dep.line.name}</div>
+          <div class="line-number" style="background-color:${bgColor};opacity:0.5">${getLineName(dep)}</div>
         </div>
         <div class="destination-container">
           <div class="swap-container-tft">
@@ -43,7 +43,7 @@ function renderTFT(departures, totalLines, threshold) {
     } else {
       row.innerHTML = `
         <div style="display:flex;justify-content:center;align-items:center;height:100%">
-          <div class="line-number" style="background-color:${bgColor}">${dep.line.name}</div>
+          <div class="line-number" style="background-color:${bgColor}">${getLineName(dep)}</div>
         </div>
         <div class="destination-container">
           <div class="destination">${directionText}</div>
