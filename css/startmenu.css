@@ -82,7 +82,8 @@
     font-family: inherit;
 }
 
-#variant-selector {
+#variant-selector,
+#zzamode-selector {
     display: flex;
     gap: 8px;
     justify-content: center;

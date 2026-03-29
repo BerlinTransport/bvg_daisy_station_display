@@ -63,3 +63,21 @@ darkBtn.addEventListener('click', () => {
   darkBtn.textContent = !isActive ? 'An' : 'Aus';
   document.getElementById('monitor-tft').classList.toggle('dark-mode', !isActive);
 });
+
+// ZZA-Modus Sichtbarkeit bei Variant-Wechsel
+document.querySelectorAll('#variant-selector .variant-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.getElementById('cfg-group-zzamode').style.display =
+      currentVariant === 'zza' ? 'flex' : 'none';
+  });
+});
+
+// ZZA-Modus Buttons
+document.querySelectorAll('#zzamode-selector .variant-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#zzamode-selector .variant-btn')
+      .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentZzaMode = btn.dataset.zzamode;
+  });
+});

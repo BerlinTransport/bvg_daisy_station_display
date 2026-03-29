@@ -21,12 +21,11 @@ const GENERIC_SUFFIXES = [
 
 function shortenDestination(text, threshold, product) {
   let t = text.replace(/\s*[\(\[].*?[\)\]]/g, '').trim();
-  t = t.replace(/,?\s+(Bhf|Bahnhof|Bf)\.?$/i, '').trim();
+  t = t.replace(/,?\s*\b(Hauptbahnhof|Bahnhof|Bhf\.?|Bf\.?)\s*$/i, '').trim();
   t = t.replace(/\s+via\s+.*/i, '').trim();
 
-  if (product === 'suburban' || product === 'regional') {
-    t = t.replace(/^S\+U\s+/i, '').replace(/^S\s+/i, '').trim();
-  }
+  if (product === 'suburban' || product === 'regional' || product === 'express')
+  t = t.replace(/^S\+U\s+|^S\s+/i, '').trim();
 
   if (t.length <= threshold) return t;
 
@@ -34,8 +33,8 @@ function shortenDestination(text, threshold, product) {
   if (commaIdx !== -1) {
     const before = t.slice(0, commaIdx).trim();
     const after  = t.slice(commaIdx + 1).trim();
-    const isGeneric = GENERIC_SUFFIXES
-      .some(s => after.toLowerCase() === s.toLowerCase());
+    const afterClean = after.replace(/[\/\s]*(ZOB|Busbahnhof|Schleife|Dorfplatz|Markt|Rathaus)\s*$/i, '').trim();
+    const isGeneric = afterClean === '' || GENERICSUFFIXES.some(s => afterClean.toLowerCase() === s.toLowerCase());
     t = isGeneric ? before : after;
   }
   if (t.length <= threshold) return t;
@@ -65,7 +64,7 @@ function getLineFilter() {
 
 // ── Fernverkehr-Erkennung ─────────────────────────────────────────────
 
-const EXPRESS_PREFIXES = ['ICE', 'IC', 'EC', 'RJ', 'RJX', 'NJ', 'EN', 'TGV', 'EST'];
+const EXPRESS_PREFIXES = ['ICE', 'IC', 'EC', 'RJ', 'RJX', 'NJ', 'EN', 'TGV', 'EST', 'FLX'];
 
 function isExpressTrain(dep) {
   if (!dep.line?.name) return false;
@@ -78,14 +77,6 @@ function isExpressTrain(dep) {
 function getLineName(dep) {
   let name = dep.line?.name ?? '';
 
-  // FLX aus Remarks erkennen und Prefix setzen
-  const isFlix = dep.remarks?.some(
-    r => r.type === 'hint' && r.code === 'OPERATOR' && r.text === 'FLX'
-  );
-  if (isFlix && !name.startsWith('FLX')) {
-    return `FLX ${name}`;
-  }
-
   // Bei Fernzügen nur die Zahl anzeigen (ICE 685 → 685)
   if (isExpressTrain(dep)) {
     const match = name.match(/\d+/);
@@ -93,4 +84,13 @@ function getLineName(dep) {
   }
 
   return name;
+}
+
+let currentZzaMode = 'su'; // 'su' oder 'regio'
+
+function getFullLineName(dep) {
+  let name = dep.line?.name ?? '';
+  const isFlix = dep.remarks?.some(r => r.type === 'hint' && r.code === 'OPERATOR' && r.text === 'FLX');
+  if (isFlix && !name.startsWith('FLX')) name = 'FLX ' + name;
+  return name; // ICE 685, FLX 1321 etc. – kein Kürzen
 }

@@ -167,3 +167,22 @@
   color: #ffffff;
   white-space: nowrap;
 }
+
+/* Regio+Express: kein Badge, nur Text */
+.zza-cell-line--regio {
+  display: flex;
+  align-items: center;
+}
+
+.zza-line-regio {
+  font-weight: 700;
+  font-size: 1em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Regio+Express: breitere Zugnummer-Spalte */
+#monitor-zza.zza-regio-mode .header-zza-cols,
+#monitor-zza.zza-regio-mode .row-zza {
+  grid-template-columns: 3.5vw 22vw 1fr minmax(10vw, auto) 14vw;
+}
