@@ -28,6 +28,11 @@ function goToMenu() {
   document.getElementById('global-station-name').textContent = '';
   document.getElementById('global-clock').style.display = 'none';
   document.getElementById('gf-sep').style.display = 'none';
+  document.getElementById('fullscreen-btn').style.display = 'none';
+  document.getElementById('footer-fs-sep').style.display = 'none';
+  document.getElementById('footer-back-btn').style.display = 'none';
+  document.getElementById('footer-back-sep').style.display = 'none';
+  document.exitFullscreen?.();
   clearInterval(timer);
   clearInterval(clockTimer);
   clockTimer = null;
@@ -160,4 +165,8 @@ function startMonitor() {
   update();
   if (timer) clearInterval(timer);
   timer = setInterval(update, currentVariant === 'daisy' ? 20000 : 30000);
+  document.getElementById('fullscreen-btn').style.display = 'inline';
+  document.getElementById('footer-fs-sep').style.display = 'inline';
+  document.getElementById('footer-back-btn').style.display = 'inline';
+  document.getElementById('footer-back-sep').style.display = 'inline';
 }

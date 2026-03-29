@@ -81,3 +81,21 @@ document.querySelectorAll('#zzamode-selector .variant-btn').forEach(btn => {
     currentZzaMode = btn.dataset.zzamode;
   });
 });
+
+const fsBtn = document.getElementById('fullscreen-btn');
+
+fsBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    fsBtn.textContent = '✕ Vollbild';
+  } else {
+    document.exitFullscreen();
+    fsBtn.textContent = '⛶ Vollbild';
+  }
+});
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    fsBtn.textContent = '⛶ Vollbild';
+  }
+});
