@@ -6,9 +6,17 @@ let currentLines = 7;
 
 const MIN_FONT_PX = 16;
 
-const TEXT_COL_RATIO       = { daisy: 0.65, tft: 0.75, zza: 0.60 };
-const CONTAINER_PADDING_VW = { daisy: 0.06, tft: 0.03, zza: 0.02 };
-const CHAR_FACTOR          = { daisy: 0.47, tft: 0.47, zza: 0.45 };
+const TEXT_COL_RATIO = { daisy: 0.65, tft: 0.75, zza: 0.60, flip: 0.70 };
+const CONTAINER_PADDING_VW = { daisy: 0.06, tft: 0.03, zza: 0.02, flip: 0.02 };
+const CHAR_FACTOR = { daisy: 0.47, tft: 0.47, zza: 0.45, flip: 0.62 };
+
+let currentFlipLineMode = 'badge'; // 'badge' oder 'chars'
+
+function getOperatorPrefix(dep) {
+  if (!dep.remarks) return null;
+  const hint = dep.remarks.find(r => r.type === 'hint' && r.code === 'OPERATOR');
+  return hint ? hint.text.trim() : null;
+}
 
 // ── Zieltext kürzen ──────────────────────────────────────────────────────────
 
@@ -21,6 +29,9 @@ const GENERIC_SUFFIXES = [
 
 function shortenDestination(text, threshold, product) {
   let t = text.replace(/\s*[\(\[].*?[\)\]]/g, '').trim();
+
+  t = t.replace(/\bHauptbahnhof\b/gi, 'Hbf').trim();
+
   t = t.replace(/,?\s*\b(Hauptbahnhof|Bahnhof|Bhf\.?|Bf\.?)\s*$/i, '').trim();
   t = t.replace(/\s+via\s+.*/i, '').trim();
 
@@ -34,7 +45,7 @@ function shortenDestination(text, threshold, product) {
     const before = t.slice(0, commaIdx).trim();
     const after  = t.slice(commaIdx + 1).trim();
     const afterClean = after.replace(/[\/\s]*(ZOB|Busbahnhof|Schleife|Dorfplatz|Markt|Rathaus)\s*$/i, '').trim();
-    const isGeneric = afterClean === '' || GENERICSUFFIXES.some(s => afterClean.toLowerCase() === s.toLowerCase());
+    const isGeneric = afterClean === '' || GENERIC_SUFFIXES.some(s => afterClean.toLowerCase() === s.toLowerCase());
     t = isGeneric ? before : after;
   }
   if (t.length <= threshold) return t;
@@ -69,7 +80,10 @@ const EXPRESS_PREFIXES = ['ICE', 'IC', 'EC', 'RJ', 'RJX', 'NJ', 'EN', 'TGV', 'ES
 function isExpressTrain(dep) {
   if (!dep.line?.name) return false;
   const name = dep.line.name.toUpperCase();
-  return EXPRESS_PREFIXES.some(prefix => name.startsWith(prefix));
+  if (EXPRESS_PREFIXES.some(prefix => name.startsWith(prefix))) return true;
+  // FLX erkennen über Operator-Remark
+  if (dep.remarks?.some(r => r.type === 'hint' && r.code === 'OPERATOR' && r.text === 'FLX')) return true;
+  return false;
 }
 
 // ── Linienname normalisieren ──────────────────────────────────────────────────

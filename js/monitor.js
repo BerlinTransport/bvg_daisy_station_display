@@ -5,16 +5,40 @@ function calcScale(containerId) {
   const h = container.clientHeight;
   const w = container.clientWidth;
 
-  let fontSizePx = (h / currentLines) * 0.75;
-  if (fontSizePx < MIN_FONT_PX) fontSizePx = MIN_FONT_PX;
+  const totalLines = currentLines;
+  const rowHeightPx = h / totalLines;
 
-  const actualLines = Math.floor(h / (fontSizePx / 0.75));
+  let threshold;
 
-  const usableWidth = w * (1 - CONTAINER_PADDING_VW[currentVariant]);
-  const textColWidth = usableWidth * TEXT_COL_RATIO[currentVariant];
-  const threshold = Math.floor(textColWidth / (fontSizePx * CHAR_FACTOR[currentVariant]));
+  if (containerId === 'led-container-flip') {
+    // Kachelgröße exakt wie in renderFlip berechnet
+    const rowHeightVh = 90 / totalLines;
+    const tileHvh     = rowHeightVh * 0.72;
+    const tileWvh     = tileHvh * 0.65;
 
-  return { totalLines: actualLines, threshold };
+    // vh → px umrechnen
+    const vhPx   = window.innerHeight / 100;
+    const tilePx = tileWvh * vhPx + 1; // +1 für margin
+
+    // Breite der Ziel-Spalte in px
+    // Grid: 16vw | 1fr | 8vw | 14vw  → 1fr = 100% - 38vw
+    const vwPx        = window.innerWidth / 100;
+    const paddingPx   = 2 * 2 * vwPx; // padding: 0 2vw (links+rechts)
+    const destColPx   = w - paddingPx - (16 + 8 + 14) * vwPx;
+
+    threshold = Math.floor(destColPx / tilePx);
+
+  } else {
+    // Andere Varianten bleiben unverändert
+    let fontSizePx = rowHeightPx * 0.75;
+    if (fontSizePx < MIN_FONT_PX) fontSizePx = MIN_FONT_PX;
+
+    const usableWidth  = w * (1 - CONTAINER_PADDING_VW[containerId === 'led-container-daisy' ? 'daisy' : containerId === 'led-container-tft' ? 'tft' : 'zza']);
+    const textColWidth = usableWidth * TEXT_COL_RATIO[containerId === 'led-container-daisy' ? 'daisy' : containerId === 'led-container-tft' ? 'tft' : 'zza'];
+    threshold = Math.floor(textColWidth / (fontSizePx * CHAR_FACTOR[containerId === 'led-container-daisy' ? 'daisy' : containerId === 'led-container-tft' ? 'tft' : 'zza']));
+  }
+
+  return { totalLines, threshold };
 }
 
 // ── Navigation ───────────────────────────────────────────────────────────────
@@ -25,6 +49,7 @@ function goToMenu() {
   document.getElementById('monitor-daisy').style.display = 'none';
   document.getElementById('monitor-tft').style.display = 'none';
   document.getElementById('monitor-zza').style.display = 'none';
+  document.getElementById('monitor-flip').style.display = 'none';
   document.getElementById('global-station-name').textContent = '';
   document.getElementById('global-clock').style.display = 'none';
   document.getElementById('gf-sep').style.display = 'none';
@@ -32,7 +57,9 @@ function goToMenu() {
   document.getElementById('footer-fs-sep').style.display = 'none';
   document.getElementById('footer-back-btn').style.display = 'none';
   document.getElementById('footer-back-sep').style.display = 'none';
-  document.exitFullscreen?.();
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  }
   clearInterval(timer);
   clearInterval(clockTimer);
   clockTimer = null;
@@ -48,8 +75,9 @@ async function update() {
   if (!currentId) return;
 
   const containerId = currentVariant === 'daisy' ? 'led-container-daisy'
-    : currentVariant === 'tft' ? 'led-container-tft'
-    : 'led-container-zza';
+                    : currentVariant === 'tft'   ? 'led-container-tft'
+                    : currentVariant === 'flip'  ? 'led-container-flip'
+                    : 'led-container-zza';
 
   const { totalLines, threshold } = calcScale(containerId);
 
@@ -80,7 +108,6 @@ async function update() {
     subway:   filters.subway,
     tram:     filters.tram,
     bus:      filters.bus,
-    // regional muss true sein wenn Regio ODER Fernverkehr aktiv ist
     regional: filters.regional || filters.express
   });
 
@@ -106,16 +133,18 @@ async function update() {
       })
       .sort((a, b) => new Date(a.when ?? a.plannedWhen) - new Date(b.when ?? b.plannedWhen));
 
-    if (currentVariant === 'daisy')    renderDaisy(departures, totalLines, threshold, showTicker);
-    else if (currentVariant === 'tft') renderTFT(departures, totalLines, threshold);
-    else                               renderZZA(departures, totalLines, threshold);
+    if      (currentVariant === 'daisy') renderDaisy(departures, totalLines, threshold, showTicker);
+    else if (currentVariant === 'tft')   renderTFT(departures, totalLines, threshold);
+    else if (currentVariant === 'flip')  renderFlip(departures, totalLines, threshold);
+    else                                 renderZZA(departures, totalLines, threshold);
 
   } catch (e) {
     console.error(e);
 
     const errorContainerId = currentVariant === 'daisy' ? 'led-container-daisy'
-      : currentVariant === 'tft' ? 'led-container-tft'
-      : 'led-container-zza';
+                           : currentVariant === 'tft'   ? 'led-container-tft'
+                           : currentVariant === 'flip'  ? 'led-container-flip'
+                           : 'led-container-zza';
 
     const container = document.getElementById(errorContainerId);
     if (container) {
@@ -131,7 +160,7 @@ async function update() {
         msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:var(--lcd-text);font-family:"Roboto",sans-serif;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
       } else {
         const rowHeight = 90 / tl;
-        msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:#ffffff;font-family:"Roboto",sans-serif;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
+        msg.style.cssText = `flex:1;display:flex;align-items:center;justify-content:center;color:#f0c040;font-family:"Share Tech Mono",monospace;font-size:${rowHeight * 0.7}vh;font-weight:bold;`;
       }
 
       msg.textContent = 'API nicht erreichbar – Neuladen in 20 Sekunden';
@@ -161,12 +190,24 @@ function startClock() {
 // ── Monitor starten ───────────────────────────────────────────────────────────
 
 function startMonitor() {
+  // Alle ausblenden, dann nur den aktiven einblenden
+  document.getElementById('monitor-daisy').style.display = 'none';
+  document.getElementById('monitor-tft').style.display   = 'none';
+  document.getElementById('monitor-zza').style.display   = 'none';
+  document.getElementById('monitor-flip').style.display  = 'none';
+
+  if      (currentVariant === 'daisy') document.getElementById('monitor-daisy').style.display = 'flex';
+  else if (currentVariant === 'tft')   document.getElementById('monitor-tft').style.display   = 'flex';
+  else if (currentVariant === 'zza')   document.getElementById('monitor-zza').style.display   = 'flex';
+  else if (currentVariant === 'flip')  document.getElementById('monitor-flip').style.display  = 'flex';
+
   if (!clockTimer) startClock();
   update();
   if (timer) clearInterval(timer);
   timer = setInterval(update, currentVariant === 'daisy' ? 20000 : 30000);
-  document.getElementById('fullscreen-btn').style.display = 'inline';
-  document.getElementById('footer-fs-sep').style.display = 'inline';
+
+  document.getElementById('fullscreen-btn').style.display  = 'inline';
+  document.getElementById('footer-fs-sep').style.display   = 'inline';
   document.getElementById('footer-back-btn').style.display = 'inline';
   document.getElementById('footer-back-sep').style.display = 'inline';
 }

@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/monitor-daisy.css">
 <link rel="stylesheet" href="css/monitor-tft.css">
 <link rel="stylesheet" href="css/monitor-zza.css">
+<link rel="stylesheet" href="css/monitor-flip.css">
 <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 <body>
@@ -27,6 +28,7 @@
                 <button class="variant-btn active" data-variant="daisy">Daisy</button>
                 <button class="variant-btn" data-variant="tft">TFT</button>
                 <button class="variant-btn" data-variant="zza">ZZA (Berlin Hbf)</button>
+                <button class="variant-btn" data-variant="flip">Flip</button>
             </div>
         </div>
 
@@ -60,6 +62,15 @@
         <div id="zzamode-selector">
             <button class="variant-btn active" data-zzamode="su">S+U</button>
             <button class="variant-btn" data-zzamode="regio">Regio+Express</button>
+        </div>
+        </div>
+
+        <!-- Flip Linienmodus — nur bei Flip sichtbar -->
+        <div class="config-group" id="cfg-group-fliplinemode" style="display:none">
+        <label>Liniendarstellung:</label>
+        <div id="fliplinemode-selector">
+            <button class="variant-btn active" data-fliplinemode="badge">Badge</button>
+            <button class="variant-btn" data-fliplinemode="chars">Flip-Zeichen</button>
         </div>
         </div>
 
@@ -116,6 +127,19 @@
   <div class="zza-screen" id="led-container-zza"></div>
 </div>
 
+<!-- FLIP MONITOR -->
+<div id="monitor-flip" style="display:none">
+  <div class="header-flip">
+    <div class="header-flip-cols">
+      <span>Zug</span>
+      <span>Ziel / Destination</span>
+      <span style="text-align:center">Gleis</span>
+      <span style="text-align:right">Zeit</span>
+    </div>
+  </div>
+  <div class="flip-screen" id="led-container-flip"></div>
+</div>
+
 <!-- GLOBALER FOOTER -->
 <div id="global-footer">
     <div id="global-footer-left">
@@ -145,7 +169,7 @@
         <span class="gf-sep">|</span>
         <a href="https://github.com/BerlinTransport/bvg_daisy_station_display" target="_blank" rel="noopener">html_station_display</a>
         <span class="gf-sep">|</span>
-        <span class="gf-version">v0.0.2</span>
+        <a href="https://github.com/BerlinTransport/html_station_display/milestones" target="_blank" rel="noopener">pre v0.1</a>
     </div>
 </div>
 
@@ -166,6 +190,7 @@
 <script src="js/render-daisy.js"></script>
 <script src="js/render-tft.js"></script>
 <script src="js/render-zza.js"></script>
+<script src="js/render-flip.js"></script>
 <script src="js/monitor.js"></script>
 </body>
 </html>

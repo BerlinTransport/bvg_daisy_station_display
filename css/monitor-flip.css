@@ -1,0 +1,167 @@
+/* ── Gehäuse ─────────────────────────────────────────────── */
+#monitor-flip {
+  display: none;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: #111;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.header-flip {
+  flex-shrink: 0;
+  padding: 0.6vh 2vw;
+  border-bottom: 2px solid #333;
+  box-sizing: border-box;
+}
+
+.header-flip-cols {
+  display: grid;
+  grid-template-columns: 16vw 1fr 8vw 14vw;
+  color: #555;
+  font-size: 1.3vh;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── Scroll-Container ────────────────────────────────────── */
+.flip-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0.5vh 0 6vh 0;
+  box-sizing: border-box;
+  gap: 0; /* kein gap — Zeilenhöhe kommt ausschließlich aus JS */
+}
+
+/* ── Zeile ───────────────────────────────────────────────── */
+.row-flip {
+  display: grid;
+  grid-template-columns: 16vw 1fr 8vw 14vw;
+  align-items: center;
+  padding: 0 2vw;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.row-flip.is-cancelled {
+  opacity: 0.4;
+}
+
+/* ── Zellen ──────────────────────────────────────────────── */
+.flip-cell-line,
+.flip-cell-dest,
+.flip-cell-track,
+.flip-cell-time {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.flip-cell-track { justify-content: center; }
+.flip-cell-time  { justify-content: flex-end; }
+
+/* ── Linienbadge ─────────────────────────────────────────── */
+.flip-line-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.05em 0.35em;
+  border-radius: 0.2em;
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.flip-line-express {
+  color: #f0c040;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── Zeit-Separator ──────────────────────────────────────── */
+.flip-time-sep {
+    color: white;
+    font-weight: 700;
+    margin: 0 1px;
+    line-height: 1;
+}
+
+/* ── Die Kachel (Flip-Char) ──────────────────────────────── */
+.flip-char {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Feste Größe aus JS-berechneten CSS-Variablen */
+  width:     var(--tile-w);
+  height:    var(--tile-h);
+  font-size: var(--tile-fs);
+
+  margin: 0 1px;
+  flex-shrink: 0;
+  position: relative;
+  box-sizing: border-box;
+  line-height: 1;
+
+  background: linear-gradient(
+    to bottom,
+    #252525 0%, #222 48%,
+    #161616 52%, #1a1a1a 100%
+  );
+  border-radius: 2px;
+  outline: 1px solid #000;
+  color: #f5f5f5;
+  font-weight: 700;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.flip-char::after {
+  content: '';
+  position: absolute;
+  inset: auto 0;
+  top: calc(50% - 0.5px);
+  height: 1px;
+  background: #000;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+  pointer-events: none;
+}
+
+.flip-cell-track .flip-char {
+  color: #f0c040;
+}
+.flip-line-block {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Feste Größe — immer gleich, egal ob S7 oder ICE */
+  height: var(--tile-h);
+  width: calc(var(--tile-h) * 2.8); /* Breite = 2.8× Höhe — passt für "ICE" bis "RB24" */
+
+  font-weight: 700;
+  white-space: nowrap;
+  border-radius: 2px;
+  outline: 1px solid #000;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.02em;
+}
+
+.flip-line-block::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(50% - 0.5px);
+  height: 1px;
+  background: #000;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+  pointer-events: none;
+}
