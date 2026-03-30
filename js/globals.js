@@ -28,15 +28,38 @@ const GENERIC_SUFFIXES = [
 ];
 
 function shortenDestination(text, threshold, product) {
-  let t = text.replace(/\s*[\(\[].*?[\)\]]/g, '').trim();
+  let t = text;
 
+  const KEEP_PARENS = [
+    'Frankfurt (Oder)',
+    'Halle (Saale)',
+    'Neustadt (Dosse)',
+  ];
+  const isProtected = KEEP_PARENS.some(p => t.includes(p));
+
+  if (!isProtected) {
+    t = t.replace(/\s*[\(\[].*?[\)\]]/g, '').trim();
+  } else {
+    t = t.replace(/\s*\[.*?\]/g, '').trim();
+  }
+
+  // ", Hauptbahnhof" / ", Hbf" am Ende entfernen (Komma-Muster)
+  t = t.replace(/,\s*\b(Hauptbahnhof|Hbf\.?)\s*$/i, ' Hbf').trim();
+
+  // ", Bahnhof/Bhf/Bf" am Ende entfernen
+  t = t.replace(/,\s*\b(Bahnhof|Bhf\.?|Bf\.?)\s*$/i, '').trim();
+
+  // "Stadt Hauptbahnhof" → "Stadt Hbf"
   t = t.replace(/\bHauptbahnhof\b/gi, 'Hbf').trim();
 
-  t = t.replace(/,?\s*\b(Hauptbahnhof|Bahnhof|Bhf\.?|Bf\.?)\s*$/i, '').trim();
+  // "Bhf" / "Bf" immer entfernen
+  t = t.replace(/,?\s*\bBhf\.?\b/gi, '').trim();
+  t = t.replace(/,?\s*\bBf\.?\b/gi,  '').trim();
+
   t = t.replace(/\s+via\s+.*/i, '').trim();
 
   if (product === 'suburban' || product === 'regional' || product === 'express')
-  t = t.replace(/^S\+U\s+|^S\s+/i, '').trim();
+    t = t.replace(/^S\+U\s+|^S\s+/i, '').trim();
 
   if (t.length <= threshold) return t;
 
@@ -44,9 +67,14 @@ function shortenDestination(text, threshold, product) {
   if (commaIdx !== -1) {
     const before = t.slice(0, commaIdx).trim();
     const after  = t.slice(commaIdx + 1).trim();
-    const afterClean = after.replace(/[\/\s]*(ZOB|Busbahnhof|Schleife|Dorfplatz|Markt|Rathaus)\s*$/i, '').trim();
+
+    // "Bahnhof XYZ" im after → "XYZ" extrahieren und behalten
+    const afterStripped = after.replace(/^\s*Bahnhof\s+/i, '').trim();
+
+    const afterClean = afterStripped.replace(/[\/\s]*(ZOB|Busbahnhof|Schleife|Dorfplatz|Markt|Rathaus)\s*$/i, '').trim();
     const isGeneric = afterClean === '' || GENERIC_SUFFIXES.some(s => afterClean.toLowerCase() === s.toLowerCase());
-    t = isGeneric ? before : after;
+
+    t = isGeneric ? before : afterStripped;
   }
   if (t.length <= threshold) return t;
 
